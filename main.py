@@ -178,7 +178,7 @@ def main():
 	end_time = time.time()
 	print("Solved it!\n")
 	printBoard(solved_board)
-	print("Time to solve " + str(end_time-start_time) + " seconds")
+	print("Time to solve: " + str(end_time-start_time) + " seconds")
 
 
 if __name__=="__main__":
