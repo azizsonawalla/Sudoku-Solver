@@ -1,18 +1,32 @@
 import math
 import time
+import sys
+import click
+import os
 from copy import deepcopy, copy
 
-board = [[0,2,0,0,0,0,0,0,0],
-		 [0,0,0,6,0,0,0,0,3],
-		 [0,7,4,0,8,0,0,0,0],
-		 [0,0,0,0,0,3,0,0,2],
-		 [0,8,0,0,4,0,0,1,0],
-		 [6,0,0,5,0,0,0,0,0],
-		 [0,0,0,0,1,0,7,8,0],
-		 [5,0,0,0,0,9,0,0,0],
-		 [0,0,0,0,0,0,0,4,0]] #Note that cartesian position x,y is accessed by board[y][x]
+# Global variable to store Sudoku board to solve
+# Note that cartesian position x,y on the Sudoku board (0,0 being on the top-left) is accessed by board[y][x]
+board = [[]]
 
-empty = 0 #Define how you wish to represent blank spaces
+def parseTextFile(path):
+	"""
+	Parses .txt file on given path and insantiates the global
+	variable board as a 2D array.
+	"""
+	file = open(path, 'r')
+	global board
+	board = []
+	for line in file:
+		line = line.strip('\n').replace(' ', '')
+		if len(line) != 9:
+			print("Invalid Sudoku board provided")
+			return
+		row = []
+		for character in line:
+			row.append(int(character))
+		board.append(row)
+
 
 def inclusive_range(start, end):
 	"""
@@ -118,7 +132,7 @@ def findPrevEmptyPosition(x,y):
 		x_prev = x-1
 		y_prev = y
 
-	if board[y_prev][x_prev] == empty:
+	if board[y_prev][x_prev] == 0:
 		return [x_prev, y_prev]
 	else:
 		return findPrevEmptyPosition(x_prev,y_prev)
@@ -140,10 +154,14 @@ def printBoard(boardToPrint):
 
 
 
-def main():
+@click.command()
+@click.argument('board', default=os.path.join(os.path.dirname(__file__), 'BoardToSolve.txt'))
+def main(board):
 
-	print("Solving board:\n")
+	parseTextFile(board)
+	print("\nSolving board:\n")
 	printBoard(board)
+	sys.stdout.flush()
 	start_time = time.time()
 	solved_board = deepcopy(board)
 
@@ -151,20 +169,15 @@ def main():
 	while 0 <= y <= 8:
 		x = 0
 		while 0 <= x <= 8:	
-			if board[y][x] != empty:
+			if board[y][x] != 0:
 				x += 1
 				continue
-
 			current_num = copy(solved_board[y][x])
-			if current_num == empty:
-				current_num = 0
-
 			while current_num <= 9:
 				current_num += 1
 				if isValidInPosition(x, y, current_num, solved_board):
 					solved_board[y][x] = current_num
-					break
-			
+					break			
 			if current_num >= 10:
 				solved_board[y][x] = 0
 				prev_position = findPrevEmptyPosition(x,y)
@@ -172,12 +185,12 @@ def main():
 				y = prev_position[1]
 			else:
 				x += 1
-
 		y = y+1
 
 	end_time = time.time()
 	print("Solved it!\n")
 	printBoard(solved_board)
+	sys.stdout.flush()
 	print("Time to solve: " + str(end_time-start_time) + " seconds")
 
 

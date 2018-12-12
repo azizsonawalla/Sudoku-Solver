@@ -40,7 +40,7 @@ board = [[0,2,0,0,0,0,0,0,0],
          [5,0,0,0,0,9,0,0,0],
          [0,0,0,0,0,0,0,4,0]] 
 
-		 #Note that cartesian position x,y on the Sudoku board is accessed by board[y][x]
+#Note that cartesian position x,y on the Sudoku board (0,0 being on the top-left) is accessed by board[y][x]
 ```
 
 ### Running the program
